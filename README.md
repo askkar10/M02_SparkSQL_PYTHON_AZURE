@@ -234,8 +234,7 @@ Once inside the Databricks UI, you can create clusters, notebooks, and start wor
 - Press `Create compute` button.
 - Setting up the cluster settings: choose `Single Node`, in `Databricks Runtime Version` use basic preset (not ML), unset the `Use Photon Accseleration` then press the button `Create compute` (it will take some time 8-10 min).
 - In compute in spark config create:
-  fs.azure.account.key.stdevwesteuropexdpv.dfs.core.windows.net 
-  "your_storage_account_key"
+  fs.azure.account.key.stdevwesteuropexdpv.dfs.core.windows.net your_storage_account_key
 - Create notebooks, write code and launch them on created Databricks cluster
 
 ![alt text](image.png)
