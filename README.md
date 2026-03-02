@@ -248,7 +248,7 @@ The pipeline successfully processed data through all three layers of the Medalli
 
 1. Bronze Layer (Raw Data Ingestion)
 
-![screenshots/image copy.png](<screenshots/image copy.png>)
+![alt text](<screenshots/image copy.png>)
 ![alt text](<screenshots/image copy 2.png>)
 
 2. Silver Layer (Cleaned & Standardized)
@@ -271,6 +271,7 @@ The pipeline successfully processed data through all three layers of the Medalli
 
 ![alt text](<screenshots/image copy 7.png>)
 ![alt text](<screenshots/image copy 8.png>)
+
 ## 7. Destroy Infrastructure (Required Step)
 
 
