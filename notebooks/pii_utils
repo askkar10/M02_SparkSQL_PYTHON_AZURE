@@ -1,0 +1,7 @@
+CREATE OR REPLACE FUNCTION bronze.encrypt_pii(col_value STRING)
+RETURNS STRING
+RETURN base64(aes_encrypt(col_value, '1234567890123456', 'GCM')); 
+
+CREATE OR REPLACE FUNCTION bronze.decrypt_pii(encrypted_value STRING)
+RETURNS STRING
+RETURN CAST(aes_decrypt(unbase64(encrypted_value), '1234567890123456', 'GCM') AS STRING);

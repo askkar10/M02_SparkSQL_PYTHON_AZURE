@@ -1,0 +1,18 @@
+-- Creating the Bronze Schema
+CREATE SCHEMA IF NOT EXISTS bronze
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/bronze'
+COMMENT 'External schema for raw data ingestion';
+
+-- Creating the Silver Schema
+CREATE SCHEMA IF NOT EXISTS silver
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/silver'
+COMMENT 'External schema for cleansed and standardized data';
+
+-- Creating the Gold Schema
+CREATE SCHEMA IF NOT EXISTS gold
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/gold'
+COMMENT 'External schema for final analytical results';
+
+-- STEP 4: Verify schema creation and locations
+SHOW SCHEMAS;
+DESCRIBE SCHEMA EXTENDED bronze;

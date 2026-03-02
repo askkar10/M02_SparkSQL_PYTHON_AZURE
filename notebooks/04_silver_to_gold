@@ -1,0 +1,48 @@
+%run ./pii_utils
+
+-- Top 10 Hotels with Maximum Absolute Temperature Difference by Month
+CREATE OR REPLACE TABLE gold.top_10_temp_diff_monthly
+AS
+SELECT 
+    hotel_id,
+    MONTH(weather_date) AS month,
+    (MAX(avg_temperature) - MIN(avg_temperature)) AS abs_temp_diff
+FROM silver.hotel_weather_processed
+GROUP BY hotel_id, month
+ORDER BY ABS(abs_temp_diff) DESC
+LIMIT 10;
+
+-- Top 10 busiest hotels per month based on visit counts
+CREATE OR REPLACE TABLE gold.top_10_busiest_hotels_monthly
+AS
+SELECT 
+    hotel_id,
+    MONTH(srch_ci) AS month,
+    COUNT(*) AS visit_count
+FROM silver.expedia_processed
+GROUP BY hotel_id, month
+ORDER BY visit_count DESC
+LIMIT 10;
+
+-- Temperature trend (end vs start) for visits longer than 7 days
+CREATE OR REPLACE TABLE gold.weather_trend_extended_stay
+AS
+WITH extended_stays AS (
+    SELECT hotel_id, srch_ci, srch_co 
+    FROM silver.expedia_processed 
+    WHERE DATEDIFF(srch_co, srch_ci) > 7
+)
+SELECT 
+    es.hotel_id,
+    es.srch_ci,
+    es.srch_co,
+    (w_end.avg_temperature - w_start.avg_temperature) AS temp_trend,
+    (SELECT AVG(avg_temperature) 
+     FROM silver.hotel_weather_processed 
+     WHERE hotel_id = es.hotel_id 
+       AND weather_date BETWEEN CAST(es.srch_ci AS DATE) AND CAST(es.srch_co AS DATE)) AS avg_stay_temp
+FROM extended_stays es
+JOIN silver.hotel_weather_processed w_start 
+  ON es.hotel_id = w_start.hotel_id AND CAST(es.srch_ci AS DATE) = w_start.weather_date
+JOIN silver.hotel_weather_processed w_end 
+  ON es.hotel_id = w_end.hotel_id AND CAST(es.srch_co AS DATE) = w_end.weather_date;

@@ -1,0 +1,14 @@
+SELECT * FROM gold.top_10_temp_diff_monthly
+ORDER BY abs_temp_diff DESC;
+
+SELECT * FROM gold.top_10_busiest_hotels_monthly
+ORDER BY visit_count DESC;
+
+SELECT 
+    hotel_id, 
+    srch_ci AS check_in, 
+    srch_co AS check_out, 
+    temp_trend, 
+    avg_stay_temp
+FROM gold.weather_trend_extended_stay
+LIMIT 20;

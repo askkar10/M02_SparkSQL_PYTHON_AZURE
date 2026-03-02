@@ -1,0 +1,30 @@
+%run ./01_create_metadata
+
+CREATE OR REPLACE TABLE bronze.expedia_raw
+USING DELTA
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/bronze/expedia_raw'
+AS
+SELECT 
+    * EXCEPT (user_id, user_location_city),
+    -- Re-adding columns as encrypted strings
+    bronze.encrypt_pii(CAST(user_id AS STRING)) AS user_id,
+    bronze.encrypt_pii(user_location_city) AS user_location_city
+FROM read_files(
+  'abfss://data@sam02sparksqlne.dfs.core.windows.net/expedia/',
+  format => 'avro'
+);
+
+-- 2. Ingest Hotel Weather Data (Parquet format)
+-- Note: The path is 'hotel-weather' as verified by your file listing
+CREATE OR REPLACE TABLE bronze.hotel_weather_raw
+USING DELTA
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/bronze/hotel_weather_raw'
+AS
+SELECT * FROM read_files(
+  'abfss://data@sam02sparksqlne.dfs.core.windows.net/hotel-weather/',
+  format => 'parquet'
+);
+
+-- Documentation
+COMMENT ON TABLE bronze.expedia_raw IS 'Raw Expedia bookings with encrypted PII';
+COMMENT ON TABLE bronze.hotel_weather_raw IS 'Raw Weather data per hotel and date';

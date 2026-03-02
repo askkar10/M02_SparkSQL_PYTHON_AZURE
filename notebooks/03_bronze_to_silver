@@ -1,0 +1,60 @@
+%run ./01_create_metadata
+
+-- Creating Silver table for Expedia
+CREATE OR REPLACE TABLE silver.expedia_processed
+USING DELTA
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/silver/expedia_processed'
+AS
+WITH decrypted_data AS (
+    -- Step 1: Decrypt PII fields for processing
+    SELECT 
+        * EXCEPT (user_id, user_location_city),
+        bronze.decrypt_pii(user_id) AS user_id_raw,
+        bronze.decrypt_pii(user_location_city) AS city_raw
+    FROM bronze.expedia_raw
+),
+cleaned_data AS (
+    -- Step 2: Apply cleaning and standardization
+    SELECT DISTINCT
+        CAST(hotel_id AS BIGINT) AS hotel_id,
+        TRIM(user_id_raw) AS user_id_clean,
+        -- Standardizing check-in/out date formats
+        CAST(srch_ci AS TIMESTAMP) AS srch_ci,
+        CAST(srch_co AS TIMESTAMP) AS srch_co,
+        -- Handling empty strings and trimming
+        NULLIF(TRIM(city_raw), '') AS city_clean
+    FROM decrypted_data
+    -- Filter out records with nulls in critical fields
+    WHERE hotel_id IS NOT NULL 
+      AND srch_ci IS NOT NULL 
+      AND srch_co IS NOT NULL
+)
+-- Step 3: Re-encrypt and store
+SELECT 
+    * EXCEPT (user_id_clean, city_clean),
+    bronze.encrypt_pii(user_id_clean) AS user_id,
+    bronze.encrypt_pii(city_clean) AS user_location_city
+FROM cleaned_data;
+
+COMMENT ON TABLE silver.expedia_processed IS 'Standardized Expedia data with re-encrypted PII';
+
+-- Creating Silver table for Weather with corrected column mapping
+-- Using avg_tmpr_c as the temperature source based on schema suggestions
+CREATE OR REPLACE TABLE silver.hotel_weather_processed
+USING DELTA
+LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/silver/hotel_weather_processed'
+AS
+SELECT DISTINCT
+    -- Mapping 'id' from Bronze to 'hotel_id' in Silver for consistency
+    CAST(id AS BIGINT) AS hotel_id,
+    -- Constructing a proper date from year, month, and day columns
+    CAST(make_date(year, month, day) AS DATE) AS weather_date,
+    -- Using the Celsius column as identified in the schema error
+    CAST(avg_tmpr_c AS DOUBLE) AS avg_temperature
+FROM bronze.hotel_weather_raw
+WHERE id IS NOT NULL 
+  AND year IS NOT NULL 
+  AND month IS NOT NULL 
+  AND day IS NOT NULL;
+
+COMMENT ON TABLE silver.hotel_weather_processed IS 'Cleaned weather data with temperature in Celsius and mapped hotel_id';

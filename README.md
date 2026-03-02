@@ -234,67 +234,45 @@ Once inside the Databricks UI, you can create clusters, notebooks, and start wor
 - Press `Create compute` button.
 - Setting up the cluster settings: choose `Single Node`, in `Databricks Runtime Version` use basic preset (not ML), unset the `Use Photon Accseleration` then press the button `Create compute` (it will take some time 8-10 min).
 - In compute in spark config create:
+<<<<<<< HEAD
   fs.azure.account.key.stdevwesteuropexdpv.dfs.core.windows.net your_storage_account_key
+=======
+  fs.azure.account.key.stdevwesteuropexdpv.dfs.core.windows.net 
+  your_storage_account_key
+>>>>>>> e65e2b1 (Update to SQL version)
 - Create notebooks, write code and launch them on created Databricks cluster
-
-![alt text](image.png)
 
 The pipeline successfully processed data through all three layers of the Medallion Architecture.
 
+![alt text](screenshots/image.png)
+
 1. Bronze Layer (Raw Data Ingestion)
-Source: Raw data was ingested from Azure Data Lake Storage (ADLS Gen2).
 
-Security: Personally Identifiable Information (PII) such as user_id and address was encrypted using the AES-256 algorithm before being stored in Managed Delta Tables.
-
-Screenshots:
-![alt text](screenshots/image-1.png)
-![alt text](screenshots/image-2.png)
-![alt text](screenshots/image-3.png)
-![alt text](screenshots/image-4.png)
+![screenshots/image copy.png](<screenshots/image copy.png>)
+![alt text](<screenshots/image copy 2.png>)
 
 2. Silver Layer (Cleaned & Standardized)
-Transformations: Data underwent cleaning, including white-space trimming, timestamp standardization, and duplicate removal.
 
-Data Integrity: PII data remained encrypted to ensure compliance with security standards.
-
-Screenshots:
-![alt text](screenshots/image-5.png)
-![alt text](screenshots/image-6.png)
-![alt text](screenshots/image-7.png)
+![alt text](<screenshots/image copy 3.png>)
+![alt text](<screenshots/image copy 4.png>)
 
 3. Gold Layer (Business Intelligence)
-The final layer provides decrypted, aggregated insights for reporting purposes.
 
-Top 10 Busiest Hotels Monthly: Identified leaders in occupancy by counting monthly visits per hotel.
+![alt text](<screenshots/image copy 5.png>)
+![alt text](<screenshots/image copy 6.png>)
 
-Top 10 Temperature Difference Monthly: Analyzed weather anomalies by calculating the maximum absolute temperature difference for each hotel.
+4. Workflow & Orchestration
 
-Weather Trend for Extended Stays: Calculated temperature trends (first vs. last day) and average temperatures for visits exceeding 7 days.
-
-⚙️ Workflow & Orchestration
-The entire process was automated using Databricks Workflows.
-
-Sequence: The job executed notebooks 01 -> 02 -> 03 -> 04 in a linear sequence.
-
-Status: Succeeded (Run duration: 2m 57s).
-
-Monitoring: Email notifications were configured to alert on task failure to ask...
-
-Screenshot:
-![alt text](screenshots/image-8.png)
-![alt text](screenshots/image-9.png)
-![alt text](screenshots/image-10.png)
 ![alt text](screenshots/image-11.png)
 ![alt text](screenshots/image-12.png)
 ![alt text](screenshots/image-13.png)
-![alt text](screenshots/image-14.png)
-![alt text](screenshots/image-15.png)
-![alt text](screenshots/image-16.png)
-![alt text](screenshots/image-17.png)
-![alt text](screenshots/image-18.png)
 
+5. Checking data
 
+![alt text](<screenshots/image copy 7.png>)
+![alt text](<screenshots/image copy 8.png>)
 ## 7. Destroy Infrastructure (Required Step)
+
 
 After completing all steps, **destroy the infrastructure** to clean up all deployed resources.
 
