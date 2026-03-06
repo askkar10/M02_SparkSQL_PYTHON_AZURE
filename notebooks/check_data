@@ -1,3 +1,6 @@
+-- To check
+
+
 SELECT * FROM gold.top_10_temp_diff_monthly
 ORDER BY abs_temp_diff DESC;
 

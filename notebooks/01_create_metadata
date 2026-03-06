@@ -1,3 +1,5 @@
+-- To check
+
 -- Creating the Bronze Schema
 CREATE SCHEMA IF NOT EXISTS bronze
 LOCATION 'abfss://data@sam02sparksqlne.dfs.core.windows.net/bronze'
