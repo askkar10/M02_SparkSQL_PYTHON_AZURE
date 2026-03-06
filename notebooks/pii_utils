@@ -1,3 +1,6 @@
+-- To check
+
+
 CREATE OR REPLACE FUNCTION bronze.encrypt_pii(col_value STRING)
 RETURNS STRING
 RETURN base64(aes_encrypt(col_value, '1234567890123456', 'GCM')); 

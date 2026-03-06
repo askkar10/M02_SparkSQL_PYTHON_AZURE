@@ -1,3 +1,6 @@
+-- To check
+
+
 %run ./01_create_metadata
 
 -- Creating Silver table for Expedia
